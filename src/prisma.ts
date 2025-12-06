@@ -4,7 +4,7 @@ import { PrismaNeon } from '@prisma/adapter-neon';
 import { Pool } from '@neondatabase/serverless';
 
 // Fix 1: Import env correctly
-import { env } from './src/config/env.js';
+import { env } from './config/env.js';
 
 // Fix 2: Use correct Pool type
 const neonPool = new Pool({ connectionString: env.DATABASE_URL });

@@ -1,11 +1,11 @@
 // src/modules/news/news.controller.ts
 import type { Request, Response } from 'express';
-import { prisma } from '../../../prisma.js';
+import { prisma } from '../../prisma.js';
 import { uploadPhoto } from '../../middleware/upload.middleware.js';
 import cloudinary from '../../config/cloudinary.js';
 
 export class NewsController {
-  static async getAll(req: Request, res: Response) {
+  static async getAll(_req: Request, res: Response) {
     const news = await prisma.news.findMany({
       where: { status: 'published' },
       include: { author: { select: { firstName: true, lastName: true } } },

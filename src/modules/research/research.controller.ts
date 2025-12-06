@@ -1,6 +1,6 @@
 // src/modules/research/research.controller.ts
 import type { Request, Response } from 'express';
-import { prisma } from '../../../prisma.js';
+import { prisma } from '../../prisma.js';
 import { uploadPhoto } from '../../middleware/upload.middleware.js';
 import cloudinary from '../../config/cloudinary.js';
 

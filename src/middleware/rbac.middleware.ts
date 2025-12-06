@@ -1,6 +1,6 @@
 // src/middleware/rbac.middleware.ts
 import type { Request, Response, NextFunction } from 'express';
-import { prisma } from '../../prisma.js';
+import { prisma } from '../prisma.js';
 
 export const requirePermission = (permission: string) => {
   return async (req: Request, res: Response, next: NextFunction) => {

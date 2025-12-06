@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { specs } from '../swagger.js';
+import { specs } from './swagger.js';
 import swaggerUi from 'swagger-ui-express';
 import authRoutes from './modules/auth/auth.routes.js';
 import staffRoutes from './modules/staff/staff.routes.js';

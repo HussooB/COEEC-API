@@ -1,6 +1,6 @@
 // src/modules/department/department.controller.ts
 import type { Request, Response } from 'express';
-import { prisma } from '../../../prisma.js';
+import { prisma } from '../../prisma.js';
 
 export class DepartmentController {
   static async getAll(_: Request, res: Response) {

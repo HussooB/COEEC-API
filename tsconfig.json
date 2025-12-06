@@ -1,21 +1,35 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "outDir": "dist",
     "rootDir": ".",
+    "outDir": "dist",
+    "module": "NodeNext",
+    "target": "esnext",
+    "lib": ["esnext"],
+    "types": ["node"],
     "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
     "strict": true,
+    "noImplicitAny": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
-    "noEmit": false,
+    "skipLibCheck": true,
+    "moduleDetection": "force",
     "typeRoots": ["./node_modules/@types", "./src/@types"]
   },
-  "include": ["src/**/*", "prisma.ts", "swagger.ts"],
+  "include": [
+    "src/**/*",
+    "src/prisma.ts",
+    "src/swagger.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

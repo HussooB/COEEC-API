@@ -2,7 +2,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
-import { prisma } from '../../prisma.js';
+import { prisma } from '../prisma.js';
 
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
   let token: string | undefined;

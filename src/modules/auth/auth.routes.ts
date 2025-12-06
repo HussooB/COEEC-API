@@ -24,6 +24,16 @@ const router = Router();
  *       200:
  *         description: Login successful
  */
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Health check (used to prevent Render sleep)
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Server is alive
+ */
 router.post('/login', AuthController.login);
 
 router.get('/me', protect, AuthController.me);

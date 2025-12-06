@@ -1,6 +1,6 @@
 // src/modules/auth/auth.service.ts
 import bcrypt from 'bcryptjs';
-import { prisma } from '../../../prisma.js';
+import { prisma } from '../../prisma.js';
 import { generateToken } from '../../shared/utils/generateToken.js';
 
 export class AuthService {

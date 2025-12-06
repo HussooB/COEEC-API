@@ -29,7 +29,7 @@ export class StaffController {
     }
   }
 
-  static async getAll(req: Request, res: Response) {
+  static async getAll(_req: Request, res: Response) {
     const staff = await StaffService.getAll();
     res.json({ success: true, data: staff });
   }
