@@ -1,0 +1,201 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  
+}
+
+// ──────────────────────────────────────
+// RBAC CORE
+// ──────────────────────────────────────
+model Role {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique // super_admin, admin, dept_head, editor, staff
+  description String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  permissions RolePermission[]
+  users       UserRole[]
+}
+
+model Permission {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique // manage_all_staff, edit_own_profile, etc.
+  description String?
+  createdAt   DateTime @default(now())
+
+  roles RolePermission[]
+}
+
+model RolePermission {
+  roleId       Int
+  permissionId Int
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+// ──────────────────────────────────────
+// USER (Faculty + Admins only — NOT public users)
+// ──────────────────────────────────────
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  password     String
+  firstName    String
+  lastName     String
+  title        String?   // Dr., Prof., Mr., etc.
+  academicRank String?   // Dean, Associate Professor, Lecturer
+  phone        String?
+  officeLocation String?
+  photoUrl     String?
+  cvUrl        String?
+  biography    String?
+
+  departmentId Int?
+  department   Department? @relation("DepartmentStaff", fields: [departmentId], references: [id])
+
+  isActive     Boolean @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // RBAC
+  roles        UserRole[]
+
+  // One-to-many
+  education    Education[]
+  experience   Experience[]
+  publications Publication[]
+  projectsLed  ResearchProject[] @relation("ProjectPI")
+  news         News[]
+
+  // As department head
+  departmentHead Department? @relation("DepartmentHead")
+}
+
+model UserRole {
+  userId String
+  roleId Int
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+// ──────────────────────────────────────
+// DEPARTMENTS & PROGRAMS
+// ──────────────────────────────────────
+model Department {
+  id          Int      @id @default(autoincrement())
+  name        String
+  shortName   String?
+  description String?
+  headId      String?  @unique
+  head        User?    @relation("DepartmentHead", fields: [headId], references: [id])
+
+  staff       User[]   @relation("DepartmentStaff")
+  programs    Program[]
+  createdAt   DateTime @default(now())
+}
+
+model Program {
+  id           Int      @id @default(autoincrement())
+  name         String   // "B.Sc. in Computer Science and Engineering"
+  level        String   // BSc, MSc, PhD
+  duration     Int?     // years
+  description  String?
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
+}
+
+// ──────────────────────────────────────
+// STAFF DETAILS
+// ──────────────────────────────────────
+model Education {
+  id          Int    @id @default(autoincrement())
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  degree      String
+  field       String
+  institution String
+  startYear   Int
+  endYear     Int?
+  isCurrent   Boolean @default(false)
+}
+
+model Experience {
+  id           Int    @id @default(autoincrement())
+  userId       String
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  position     String
+  organization String
+  description  String?
+  startYear    Int
+  endYear      Int?
+  isCurrent    Boolean @default(false)
+}
+
+model Publication {
+  id     Int    @id @default(autoincrement())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title  String
+  type   String // journal, conference, book_chapter
+  venue  String
+  year   Int
+  doi    String?
+  link   String?
+  authors String?
+}
+
+// ──────────────────────────────────────
+// RESEARCH & NEWS
+// ──────────────────────────────────────
+model ResearchProject {
+  id                      Int      @id @default(autoincrement())
+  title                   String
+  slug                    String   @unique
+  description             String
+  status                  String   @default("ongoing")
+  principalInvestigatorId String
+  principalInvestigator   User     @relation("ProjectPI", fields: [principalInvestigatorId], references: [id])
+  startDate               DateTime?
+  endDate                 DateTime?
+  fundingSource           String?
+  featuredImage           String?
+  createdAt               DateTime @default(now())
+}
+
+model News {
+  id              Int       @id @default(autoincrement())
+  title           String
+  slug            String    @unique
+  content         String
+  excerpt         String?
+  featuredImage   String?
+  isEvent         Boolean   @default(false)
+  eventDate       DateTime?
+  status          String    @default("draft")
+  authorId        String
+  author          User      @relation(fields: [authorId], references: [id])
+  publishedAt     DateTime?
+  createdAt       DateTime  @default(now())
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String
+  subject   String
+  message   String
+  status    String   @default("new") // new, read, replied
+  createdAt DateTime @default(now())
+}
+
