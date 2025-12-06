@@ -11,6 +11,11 @@ import departmentRoutes from './modules/department/department.routes.js';
 import researchRoutes from './modules/research/research.routes.js';
 import newsRoutes from './modules/news/news.routes.js';
 
+
+import publicRoutes from './modules/public/public.routes.js';
+
+import adminRoutes from './modules/admin/admin.routes.js';
+
 const app = express();
 
 app.use(cors());
@@ -24,6 +29,11 @@ app.use('/api/staff', staffRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/research', researchRoutes);
 app.use('/api/news', newsRoutes);
+
+
+app.use('/api', publicRoutes);
+
+app.use('/api/admin', adminRoutes);
 
 app.get('/', (_, res) => {
   res.json({ message: 'COEEC Backend API - Running!' });

@@ -1,6 +1,12 @@
 // src/modules/staff/staff.routes.ts
 import { Router } from 'express';
-import { StaffController } from './staff.controller.js';
+import {
+  createStaffHandler,
+  updateMyProfileHandler,
+  getAllStaffHandler,
+  getOneStaffHandler,
+  searchStaffHandler,
+} from './staff.controller.js';
 import { protect } from '../../middleware/auth.middleware.js';
 import { requirePermission } from '../../middleware/rbac.middleware.js';
 
@@ -14,7 +20,6 @@ const router = Router();
  *     tags: [Staff]
  *     security: [{ bearerAuth: [] }]
  *     requestBody:
- *       required: true
  *       content:
  *         multipart/form-data:
  *           schema:
@@ -28,7 +33,7 @@ const router = Router();
  *     responses:
  *       201: { description: Staff created }
  */
-router.post('/', protect, requirePermission('manage_all_staff'), StaffController.create);
+router.post('/', protect, requirePermission('manage_all_staff'), createStaffHandler);
 
 /**
  * @swagger
@@ -48,7 +53,7 @@ router.post('/', protect, requirePermission('manage_all_staff'), StaffController
  *     responses:
  *       200: { description: Profile updated }
  */
-router.put('/profile', protect, StaffController.updateMyProfile);
+router.put('/profile', protect, updateMyProfileHandler);
 
 /**
  * @swagger
@@ -59,6 +64,38 @@ router.put('/profile', protect, StaffController.updateMyProfile);
  *     responses:
  *       200: { description: List of staff }
  */
-router.get('/', StaffController.getAll);
+router.get('/', getAllStaffHandler);
+
+/**
+ * @swagger
+ * /api/staff/{id}:
+ *   get:
+ *     summary: Get one staff by ID
+ *     tags: [Staff]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200: { description: Staff details }
+ *       404: { description: Not found }
+ */
+router.get('/:id', getOneStaffHandler);
+
+/**
+ * @swagger
+ * /api/staff/search:
+ *   get:
+ *     summary: Search staff
+ *     tags: [Staff]
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         schema: { type: string }
+ *     responses:
+ *       200: { description: Search results }
+ */
+router.get('/search', searchStaffHandler);
 
 export default router;

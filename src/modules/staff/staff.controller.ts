@@ -1,36 +1,64 @@
 // src/modules/staff/staff.controller.ts
 import type { Request, Response } from 'express';
-import { StaffService } from './staff.service.js';
+import {
+  createStaff,
+  updateProfile,
+  getAllStaff,
+  getOneStaff,
+  searchStaff,
+} from './staff.service.js';
 import { uploadPhoto } from '../../middleware/upload.middleware.js';
 
-export class StaffController {
-  // Only super_admin
-  static async create(req: Request, res: Response) {
+export const createStaffHandler = (req: Request, res: Response) => {
+  uploadPhoto(req, res, async () => {
     try {
-      uploadPhoto(req, res, async () => {
-        const result = await StaffService.create(req.body, req.file);
-        res.status(201).json({ success: true, data: result });
-      });
+      const result = await createStaff(req.body, req.file);
+      res.status(201).json({ success: true, data: result });
     } catch (err: any) {
       res.status(400).json({ success: false, message: err.message });
     }
-  }
+  });
+};
 
-  // Own profile only
-  static async updateMyProfile(req: Request, res: Response) {
+export const updateMyProfileHandler = (req: Request, res: Response) => {
+  uploadPhoto(req, res, async () => {
     try {
-      uploadPhoto(req, res, async () => {
-        const userId = req.user!.id;
-        const result = await StaffService.updateProfile(userId, req.body, req.file);
-        res.json({ success: true, data: result });
-      });
+      const userId = req.user!.id;
+      const result = await updateProfile(userId, req.body, req.file);
+      res.json({ success: true, data: result });
     } catch (err: any) {
       res.status(400).json({ success: false, message: err.message });
     }
+  });
+};
+
+export const getAllStaffHandler = async (_req: Request, res: Response) => {
+  const staff = await getAllStaff();
+  res.json({ success: true, data: staff });
+};
+
+export const getOneStaffHandler = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  
+  if (!id) {
+    return res.status(400).json({ message: 'Staff ID is required' });
   }
 
-  static async getAll(_req: Request, res: Response) {
-    const staff = await StaffService.getAll();
-    res.json({ success: true, data: staff });
+  const staff = await getOneStaff(id);
+  if (!staff) {
+    return res.status(404).json({ message: 'Staff not found' });
   }
-}
+
+  return res.json({ success: true, data: staff });
+};
+
+export const searchStaffHandler = async (req: Request, res: Response) => {
+  const q = req.query.q as string | undefined;
+
+  if (!q || q.trim() === '') {
+    return res.json({ success: true, data: [] });
+  }
+
+  const staff = await searchStaff(q);
+  return res.json({ success: true, data: staff });
+};

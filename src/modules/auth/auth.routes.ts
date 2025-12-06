@@ -1,6 +1,6 @@
 // src/modules/auth/auth.routes.ts
 import { Router } from 'express';
-import { AuthController } from './auth.controller.js';
+import { loginHandler, me } from './auth.controller.js';
 import { protect } from '../../middleware/auth.middleware.js';
 
 const router = Router();
@@ -21,21 +21,20 @@ const router = Router();
  *               email: { type: string }
  *               password: { type: string }
  *     responses:
- *       200:
- *         description: Login successful
+ *       200: { description: Login successful }
  */
+router.post('/login', loginHandler);
+
 /**
  * @swagger
- * /health:
+ * /api/auth/me:
  *   get:
- *     summary: Health check (used to prevent Render sleep)
- *     tags: [System]
+ *     summary: Get current user
+ *     tags: [Auth]
+ *     security: [{ bearerAuth: [] }]
  *     responses:
- *       200:
- *         description: Server is alive
+ *       200: { description: User profile }
  */
-router.post('/login', AuthController.login);
-
-router.get('/me', protect, AuthController.me);
+router.get('/me', protect, me);
 
 export default router;
