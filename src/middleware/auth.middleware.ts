@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
 import { prisma } from '../prisma.js';
 
-export const protect = async (req: Request, res: Response, next: NextFunction) => {
+export const protect = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   let token: string | undefined;
 
   if (req.headers.authorization?.startsWith('Bearer')) {
@@ -12,7 +12,8 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
   }
 
   if (!token) {
-    return res.status(401).json({ message: 'Not authorized, no token' });
+    res.status(401).json({ message: 'Not authorized, no token' });
+    return;
   }
 
   try {
@@ -23,16 +24,13 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
       select: {
         id: true,
         email: true,
-        roles: {
-          select: {
-            role: { select: { name: true } },
-          },
-        },
+        roles: { select: { role: { select: { name: true } } } },
       },
     });
 
     if (!user) {
-      return res.status(401).json({ message: 'User not found' });
+      res.status(401).json({ message: 'User not found' });
+      return;
     }
 
     req.user = {
@@ -42,7 +40,9 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
     };
 
     next();
+    return;
   } catch (err) {
-    return res.status(401).json({ message: 'Token invalid or expired' });
+    res.status(401).json({ message: 'Token invalid or expired' });
+    return;
   }
 };

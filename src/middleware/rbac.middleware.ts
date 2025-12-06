@@ -3,24 +3,17 @@ import type { Request, Response, NextFunction } from 'express';
 import { prisma } from '../prisma.js';
 
 export const requirePermission = (permission: string) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (!req.user) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
     }
 
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },
       include: {
         roles: {
-          include: {
-            role: {
-              include: {
-                permissions: {
-                  include: { permission: true },
-                },
-              },
-            },
-          },
+          include: { role: { include: { permissions: { include: { permission: true } } } } },
         },
       },
     });
@@ -30,9 +23,11 @@ export const requirePermission = (permission: string) => {
     );
 
     if (!hasPermission) {
-      return res.status(403).json({ message: `Forbidden: Missing '${permission}'` });
+      res.status(403).json({ message: `Forbidden: Missing '${permission}'` });
+      return;
     }
 
     next();
+    return;
   };
 };

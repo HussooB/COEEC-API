@@ -1,6 +1,5 @@
 // src/middleware/upload.middleware.ts
 import multer from 'multer';
-import type { Request } from 'express';
 
 const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB

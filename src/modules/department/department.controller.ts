@@ -15,19 +15,20 @@ export class DepartmentController {
     res.json({ success: true, data: departments });
   }
 
-  static async getOne(req: Request, res: Response) {
-    const { id } = req.params;
-    const dept = await prisma.department.findUnique({
-      where: { id: Number(id) },
-      include: {
-        head: true,
-        programs: true,
-        staff: {
-          select: { id: true, firstName: true, lastName: true, title: true, photoUrl: true },
-        },
-      },
-    });
-    if (!dept) return res.status(404).json({ message: 'Department not found' });
-    res.json({ success: true, data: dept });
+ static async getOne(req: Request, res: Response): Promise<void> {
+  const { id } = req.params;
+  const dept = await prisma.department.findUnique({
+    where: { id: Number(id) },
+    include: { head: true, programs: true, staff: { select: { id: true, firstName: true, lastName: true, title: true, photoUrl: true } } },
+  });
+
+  if (!dept) {
+    res.status(404).json({ message: 'Department not found' });
+    return;
   }
+
+  res.json({ success: true, data: dept });
+  return;
+}
+
 }
